@@ -11,12 +11,13 @@ library(kableExtra)
 knitr::opts_chunk$set(echo = FALSE,tidy=TRUE, warning=FALSE)
 ```
 
-1. \
+1.  \
 
     ![](diagrama/diagrama.png)
 
-2.1.  \
+2.1.\
 Estas fueron las tasas probadas:
+
 ```{r}
 tasas_1 <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\2.1_tasas1.csv",sep=";", header=TRUE)
 tm <- tasas_1[3,1]
@@ -25,8 +26,8 @@ knitr::kable(tasas_1, format = "markdown", digits = 6,
              row.names = FALSE, align = c("l", "c", "r"))
              
 ```
-La em es de `r em`%, con una tm=`r tm`.
-\
+
+La em es de `r em`%, con una tm=`r tm`.\
 \
 
 ```{r}
@@ -39,6 +40,7 @@ knitr::kable(tasas_2, format = "markdown", digits = 6,
              row.names = FALSE, align = c("l", "c", "r")) 
              
 ```
+
 \
 
 ```{r}
@@ -49,4 +51,26 @@ ggplot(tasas_2, aes(x=nombre, y=exactitud, group=1)) +
   ggtitle("Gráfico de tasas de aprendizaje y exactitud")
 ```
 
+\
+2.2\
 
+```{r}
+library(tidyr)
+tasas_3 <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\2.2_tasas.csv",sep=";", header=TRUE)
+
+tasas_3_long <- gather(tasas_3, key = "exactitud", value = "valor_exactitud", exactitud_10:exactitud_50, factor_key = TRUE)
+
+
+
+tasas_3_long$nombre <- factor(tasas_3_long$nombre)
+levels(tasas_3_long$nombre) <- c("tm_div20", "tm_div15", "tm_div10", "tm_div5", "tm", "tm_5", "tm_10", "tm_15", "tm_20")
+levels(tasas_3_long$exactitud) <- c("1", "2", "3", "4", "5")
+
+colnames(tasas_3_long)[colnames(tasas_3_long) == 'exactitud'] <- 'época'
+colnames(tasas_3_long)[colnames(tasas_3_long) == 'valor_exactitud'] <- 'exactitud'
+knitr::kable(tasas_3_long, format = "markdown", digits = 6, 
+             row.names = FALSE, align = c("l", "c", "r"))
+
+```
+
+![](2.2_plot.png)

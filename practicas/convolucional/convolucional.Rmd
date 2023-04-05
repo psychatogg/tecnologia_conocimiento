@@ -53,7 +53,7 @@ ggplot(tasas_2, aes(x=nombre, y=exactitud, group=1)) +
 
 \
 2.2\
-
+Tabla en formato long de exactitud por épocas a diferentes tasas:\
 ```{r}
 library(tidyr)
 tasas_3 <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\2.2_tasas.csv",sep=";", header=TRUE)
@@ -74,3 +74,18 @@ knitr::kable(tasas_3_long, format = "markdown", digits = 6,
 ```
 
 ![](2.2_plot.png)
+Medias de exactitud por épocas: \
+```{r}
+medias_exact <- data.frame(t(apply(tasas_3[,3:7],2,function(x) mean(x))))
+knitr::kable(medias_exact, format = "markdown", digits = 6, 
+             row.names = FALSE, align = c("l", "c", "r"))
+```
+\
+2.3\
+Como podemos observar, obtenemos una mayor exactitud con tasas de aprendizaje más pequeñas que con múltiplos de la máxima. Esto puede deberse a que el algoritmo converge en una solución subóptima (mínimo local) en los primeros casos, frente a la omisión directa de dichos mínimos en los segundos casos, que inducen errores de detección y clasificación. \
+Observamos a su vez, que la tasa que da lugar a la exactitud máxima se mantiene hasta llegar a 30 épocas. A partir de las 40, tm/5 supera ligeramente a tm. Este fenómeno se debe a que el algoritmo ha dispuesto de mayor tiempo de entrenamiento. \
+La media de exactitud más alta (61.8444) se produce con 50 iteraciones, lo cual confirma lo anteriormente expuesto. \
+\
+3.1\
+
+

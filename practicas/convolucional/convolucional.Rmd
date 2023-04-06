@@ -9,7 +9,7 @@ output:
 ```{r setup, include=FALSE}
 library(formatR)
 library(kableExtra)
-knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60),echo = FALSE,tidy=TRUE, warning=FALSE)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60),echo = FALSE,tidy=TRUE, warning=FALSE, out.width = "70%")
 ```
 
 1.  \
@@ -37,8 +37,7 @@ tasas_2 <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practica
 
 tasas_2$nombre <- factor(tasas_2$nombre, levels=(tasas_2$nombre))
 
-knitr::kable(tasas_2, format = "markdown", digits = 6, 
-             row.names = FALSE, align = c("l", "c", "r")) 
+
              
 ```
 
@@ -54,7 +53,6 @@ ggplot(tasas_2, aes(x=nombre, y=exactitud, group=1)) +
 
 \
 2.2\
-Tabla en formato long de exactitud por épocas a diferentes tasas:\
 
 ```{r}
 library(tidyr)
@@ -67,11 +65,6 @@ tasas_3_long <- gather(tasas_3, key = "exactitud", value = "valor_exactitud", ex
 tasas_3_long$nombre <- factor(tasas_3_long$nombre)
 levels(tasas_3_long$nombre) <- c("tm_div20", "tm_div15", "tm_div10", "tm_div5", "tm", "tm_5", "tm_10", "tm_15", "tm_20")
 levels(tasas_3_long$exactitud) <- c("1", "2", "3", "4", "5")
-
-colnames(tasas_3_long)[colnames(tasas_3_long) == 'exactitud'] <- 'época'
-colnames(tasas_3_long)[colnames(tasas_3_long) == 'valor_exactitud'] <- 'exactitud'
-knitr::kable(tasas_3_long, format = "markdown", digits = 6, 
-             row.names = FALSE, align = c("l", "c", "r"))
 
 ```
 
@@ -96,7 +89,6 @@ Basándome en el ejercicio anterior, empleo tm/5 (0.0002) y 50 épocas:
 3.2\
 
 ```{r}
-knitr::opts_chunk$set(echo = TRUE,tidy=TRUE, warning=FALSE)
 train_acc <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\train_data.csv", header=FALSE,sep=",", dec=".")
 val_acc <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\validation_data.csv", header=FALSE,sep=",",dec=".")
 train_acc <- as.numeric(train_acc)
@@ -111,15 +103,9 @@ for (i in 1:150) {
 
 ## Repito el primer valor de las medias de la base de entrenamiento,dado que las validaciones comienzan previo al primer promediado.
 med_train<- append(10,med_train)
-
-## Ver si las diferencias son significativas
-plot(density(val_acc),main="",xlab="Valores de exactitud de validación")
-
 ```
-```{r}
-plot(density(med_train), main="",xlab="Medias de exactitud de entrenamiento")
-```
-Empleo la prueba no paramétrica de los signos para 2 muestras, dado que ambas son muy asimétricas. \
+
+Empleo la prueba no paramétrica de los signos para 2 muestras, dado que tanto las distribuciones de exactitudes de validación como la de las medias de exactitudes de entrenamiento son muy asimétricas. \
 
 ```{r}
 wilcox.test(med_train, val_acc, alternative = "two.sided", exact = FALSE, correct = FALSE)
@@ -142,12 +128,6 @@ legend("bottomright", legend = c("Training", "Validación"),
        col = c("red", "blue"), lwd = 2)
 axis(1, at=seq(0, 151, by=10))
 
-```
-```{r}
-df_trainval <- cbind(minilotes,med_train,val_acc)
-df_trainval <- df_trainval[1:50,]
-knitr::kable(df_trainval, format = "markdown", digits = 6, 
-             row.names = FALSE, align = c("l", "c", "r"))
 ```
 
 Podemos observar como a partir de, aproximadamente, el minilote 36 (iteración 5400), comienzan a separarse ambos conjuntos de forma sistemática. 

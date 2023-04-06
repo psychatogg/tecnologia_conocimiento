@@ -105,12 +105,14 @@ for (i in 1:150) {
 med_train<- append(10,med_train)
 ```
 
-Empleo la prueba no paramétrica de los signos para 2 muestras, dado que tanto las distribuciones de exactitudes de validación como la de las medias de exactitudes de entrenamiento son muy asimétricas. \
+Empleo la prueba no paramétrica de los signos para 2 muestras, dado que tanto las distribuciones de exactitudes de validación como la de las medias de exactitudes de entrenamiento son muy asimétricas.\
 
 ```{r}
 wilcox.test(med_train, val_acc, alternative = "two.sided", exact = FALSE, correct = FALSE)
 ```
-Por lo tanto, con un 95% de confianza rechazo la H0 de igualdad de medianas, por lo que existe evidencia estadística de sobreajuste. \
+
+Por lo tanto, con un 95% de confianza rechazo la H0 de igualdad de medianas, por lo que existe evidencia estadística de sobreajuste.\
+
 ```{r}
 
 minilotes <- seq(1, 151)
@@ -130,4 +132,28 @@ axis(1, at=seq(0, 151, by=10))
 
 ```
 
-Podemos observar como a partir de, aproximadamente, el minilote 36 (iteración 5400), comienzan a separarse ambos conjuntos de forma sistemática. 
+Podemos observar como a partir de, aproximadamente, el minilote 36 (iteración 5400), comienzan a separarse ambos conjuntos de forma sistemática.\
+\
+4.2\
+Aplicada a MNIST (tm/5 (0.0002),50 épocas, 900 imágenes de training, 100 de test):\
+Exactitud = 99 %\
+Matriz de confusión:\
+
+```{r}
+confMat_MNIST_test <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\confMat_MNIST_test.csv", header=FALSE,sep=",")
+
+knitr::kable(confMat_MNIST_test, format = "latex", digits = 2, 
+             row.names = FALSE, align = c("l", "c", "r"), col.names = NULL)
+```
+Aplicada a base propia (tm/5 (0.0002),50 épocas, 900 imágenes de training, 100 de test):\
+Exactitud =  25 %\
+Matriz de confusión:\
+```{r}
+confMat_propia_test <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\confMat_propia_test.csv", header=FALSE,sep=",")
+
+knitr::kable(confMat_propia_test, format = "latex", digits = 2, 
+             row.names = FALSE, align = c("l", "c", "r"), col.names = NULL)
+```
+
+
+\`\`\`

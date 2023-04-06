@@ -135,25 +135,43 @@ axis(1, at=seq(0, 151, by=10))
 Podemos observar como a partir de, aproximadamente, el minilote 36 (iteración 5400), comienzan a separarse ambos conjuntos de forma sistemática.\
 \
 4.2\
-Aplicada a MNIST (tm/5 (0.0002),50 épocas, 900 imágenes de training, 100 de test):\
-Exactitud = 99 %\
+MNIST-MNIST (tm/5 (0.0002),50 épocas, 750 imágenes de training, 100 de test, tamaño de minilote: 50, frecuencia de validación = 50):\
+Exactitud =  97 %\
 Matriz de confusión:\
 
 ```{r}
-confMat_MNIST_test <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\confMat_MNIST_test.csv", header=FALSE,sep=",")
+confMat_42_mnist <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\confMat_42_mnist.csv", header=FALSE,sep=",")
 
-knitr::kable(confMat_MNIST_test, format = "latex", digits = 2, 
+knitr::kable(confMat_42_mnist, format = "latex", digits = 2, 
              row.names = FALSE, align = c("l", "c", "r"), col.names = NULL)
 ```
-Aplicada a base propia (tm/5 (0.0002),50 épocas, 900 imágenes de training, 100 de test):\
-Exactitud =  25 %\
+MNIST-base propia (tm/5 (0.0002),50 épocas, 750 imágenes de training, 100 de test, tamaño de minilote: 50, frecuencia de validación = 50):\
+Exactitud =  22 %\
 Matriz de confusión:\
 ```{r}
-confMat_propia_test <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\confMat_propia_test.csv", header=FALSE,sep=",")
+confMat_42_propia <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\confMat_42_propia.csv", header=FALSE,sep=",")
 
-knitr::kable(confMat_propia_test, format = "latex", digits = 2, 
+knitr::kable(confMat_42_propia, format = "latex", digits = 2, 
+             row.names = FALSE, align = c("l", "c", "r"), col.names = NULL)
+```
+4.3 \
+Base propia-MNIST (tm/5 (0.0002),50 épocas, 100 imágenes de training, 100 de test, tamaño de minilote: 5, frecuencia de validación = 5):\
+Exactitud = 10 % \
+Matriz de confusión = \
+```{r}
+confMat_43_mnist <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\confMat_43_mnist.csv", header=FALSE,sep=",")
+
+knitr::kable(confMat_43_mnist, format = "latex", digits = 2, 
              row.names = FALSE, align = c("l", "c", "r"), col.names = NULL)
 ```
 
+Base propia-Base Propia (tm/5 (0.0002),50 épocas, 100 imágenes de training, 100 de test, tamaño de minilote: 5, frecuencia de validación = 5):\
+Exactitud = 30% \
+Matriz de confusión = \
+```{r}
+confMat_43_propia <- read.csv("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\convolucional\\confMat_43_propia.csv", header=FALSE,sep=",")
 
-\`\`\`
+knitr::kable(confMat_43_propia, format = "latex", digits = 2, 
+             row.names = FALSE, align = c("l", "c", "r"), col.names = NULL)
+```
+

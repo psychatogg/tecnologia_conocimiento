@@ -1,5 +1,5 @@
 ---
-title: "Tarea_8"
+title: "Tarea_6"
 author: "Juliana Quirós, Alberto"
 geometry: margin=1cm
 output:

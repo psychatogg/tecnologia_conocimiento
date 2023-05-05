@@ -1,0 +1,92 @@
+---
+title: "Tarea_7"
+author: "Juliana Quirós, Alberto"
+geometry: margin=1cm
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 40), tidy = TRUE)
+```
+
+Realizo el ACP con la base de datos "mtcars". 
+```{r,warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(corrplot)
+library(corrr)
+library(DT)
+library(hornpa)
+#Datos de tendencia central-medias
+apply(mtcars, 2, mean)
+#¿hay algún valor perdido?no
+colSums(is.na(mtcars))
+#se pinta la matriz de correlaciones de las columnas de mtcars
+corrplot(cor(mtcars), order = "hclust")
+#tiene que haber cierta colinealidad para extraer Componentes.
+#ejecutar componentes con la correlación de las variables
+#Toma como argumento la matriz de puntuaciones, no la de correlaciones
+#ejecuta internamente la matriz de correlaciones
+#asume también las columnas como variables
+pca.res <- prcomp(mtcars, scale = TRUE)
+#saturaciones de cada variable en cada factor
+#las columnas son los autovectores de la descomposición en Autovectores/autovalores
+pca.res$rotation
+#para ver los autovalores
+pca.var =pca.res$sdev ^2
+pca.var
+#se muestra el ratio de cada autovalor
+var.ratio=pca.var/sum(pca.var)
+var.ratio
+#tomamos solo dos componentes. Los más importantes
+pca.res <- prcomp(mtcars, scale = TRUE, rank =2)
+pca.res$rotation
+#las puntuaciones de los ejemplares (los vehículos) en los componentes
+pca.res$x
+```
+
+En nuestro caso, hemos de modificar el argumento "k" a 11, ya que tenemos 11 variables.
+
+```{r}
+#¿cómo se hace el test paralelo para ver cuantos retener?
+#comparando los autovalores de la simulación de la función hornpa (0.95) con los que ha arrojado nuestro análisis pca.var
+
+simulacion <- hornpa(k = 11, size = 50, reps = 500, seed = 1234)
+pca.var
+#inciso para hacer autovectores/autovalores en la de correlaciones
+ev <- eigen(cor(mtcars))
+ev$values
+ev$vectors
+###############es la demostracción de que se puede hacer con descomposición directamente
+```
+
+```{r}
+## Expansión ##
+simulacion
+pca.var
+```
+Tal y como indica nuestra comparación con las simulaciones del análisis paralelo, obtenemos 2 factores. Valoramos saturaciones para comprobar qué variables cargan en cada factor:
+
+```{r,warning=FALSE}
+library(factoextra)
+summary(pca.res)$rotation
+fviz_pca_var(pca.res,  
+             col.var = "steelblue", 
+             repel = TRUE, 
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+             ylim = c(-1, 1))
+
+```
+
+Como podemos observar, con el factor 1 correlacionan en mayor medida el número de cilindros(cyl) la cilindrada(disp), los caballos(hp) y el peso(wt). \
+Por otra parte, con el factor 2, el tipo de transmisión(am),marchas(gear) y número de carburadores(carb). El resto de variables parece tener una influencia menor en ambos factores.
+
+```{r}
+fviz_pca_ind(pca.res, col.ind="contrib") +
+      scale_color_gradient2(low="white", mid="blue",
+      high="red", midpoint=4)
+```
+
+En este último gráfico, observamos qué casos han contribuido en mayor medida a cada factor.

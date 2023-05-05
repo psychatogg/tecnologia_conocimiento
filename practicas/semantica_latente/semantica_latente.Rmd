@@ -1,0 +1,83 @@
+---
+title: "Tarea_8"
+author: "Juliana Quirós, Alberto"
+geometry: margin=1cm
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 10), tidy = TRUE)
+```
+
+El presente código realiza inicialmente una petición XML a un servicio web que extrae el contorno (direcciones principales) del subespacio "competición" y almacena en la variable "cadena". Dicho servicio calcula las proyecciones  de los 200 vectores término para calcular las similitudes.   \
+El resto del chunk conforma las transformaciones necesarias para depurar la estructura del lenguaje XML y la creación de rutas para guardar la imagen de la nube.
+
+```{r, warning=FALSE, eval=FALSE, tidy=TRUE }
+library(httr)
+library(XML)
+library(tm)
+library(SnowballC)
+library(wordcloud)
+library(RColorBrewer)
+library(Rcpp)
+library(dplyr)
+
+pal <- "competición"
+
+pngFile = paste("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\semantica_latente\\", pal, sep = "")
+#pngFile = paste("C:/midirectorio/", pal, sep = "")
+pngFile = paste(pngFile, ".png", sep = "")
+
+text2 <- "<getNearestNeighboursList xmlns='http://tempuri.org/'><code>code_here</code><a>"
+text2 <- paste(text2, pal, sep = "")
+text2 <- paste(text2, "</a><txtNegate></txtNegate><n>200</n><lenght_biased>false</lenght_biased></getNearestNeighboursList>", sep = " ")
+text2 <- enc2utf8(text2)
+
+cadena <- POST("http://comcog.psicoee.uned.es/gapi_demo/Service.svc/webHttp/getNearestNeighboursList", body = text2, verbose(), content_type("text/xml"))
+
+txt <- gsub("&lt;", "<", cadena)
+txt <- gsub("&gt;", ">", txt)
+txt <- gsub(",", ".", txt)
+txt <- enc2utf8(txt)
+print(txt)
+
+doc3 = xmlTreeParse(txt, useInternal = TRUE, encoding = "UTF-8")
+
+print(doc3)
+```
+
+A continuación, getNodeset() buscará en ese doc3 estructurado los elementos con la etiquetas "term" y "similarity", asignando a "vector" los términos relacionados con "competición", y a "vector2" sus respectivas similitudes. \
+Finalmente, se genera la nube de palabras a partir del dataframe resultante de unir los vectores anteriores.
+
+```{r, warning=FALSE, eval=FALSE, tidy=TRUE }
+#LA SINTAXIS A UTILIZAR PROVIENE DE XPATH
+vector <- getNodeSet(doc3, "//r:term/text()", c(r = "http://tempuri.org/"))
+vector2 <- getNodeSet(doc3, "//r:similarity/text()", c(r = "http://tempuri.org/"))
+
+if(!length(vector) == 0) {
+  
+  cad <- lapply(vector, xmlValue)
+  words <- as.character(cad)
+  cad <- lapply(vector2, xmlValue)
+  sims <- as.double(cad)  
+  sims <- sims * 100
+  sims <- round(sims, digits=0)^3    
+  
+  d <- data.frame("word" = words,"freq" =sims)
+  
+  set.seed(1234)
+  png(pngFile, width=1280,height=800)
+  wordcloud(words = d$word, freq = d$freq, min.freq = 1,
+            max.words=200, res=300,
+            colors=brewer.pal(8, "Dark2"))
+  dev.off()
+}
+
+```
+
+
+
+
+![](competici%C3%B3n.png)

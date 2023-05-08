@@ -1,0 +1,113 @@
+---
+title: "Tarea_4"
+author: "Juliana Quirós, Alberto"
+geometry: margin=1cm
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 10), tidy = TRUE)
+```
+El presente código calcula un árbol de decisión que predice la calidad del vino en función de 11 variables relacionadas con su composición. \
+Para ello, inicialmente transforma todas las variables en factores dados los requisitos de la función generadora del modelo. Esta se encargará de particionar en función de la variable independiente cuya relación con la dependiente cuente con la menor perplejidad, fijando en cada iteración una nueva variable, formando así "ramas" que culminen en hojas (situación de parada/menor perplejidad). \
+Cabe destacar que es un algoritmo voraz.
+
+```{r,warning=FALSE}
+library(RWeka) 
+library(caret) 
+library(datasets) 
+
+ 
+
+ 
+
+ 
+
+table_vino = read.table("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\arboles_decision\\vino.txt",  
+           header = T,       
+           sep = ",",              
+          ) 
+
+ 
+
+data_vino <- as.data.frame(table_vino) 
+
+ 
+
+## Transformamos en factores las variables 
+
+for (i in 1:12) {
+	data_vino[,i] <- as.factor(data_vino[,i])
+} 
+                         
+
+ 
+
+
+set.seed(1)
+
+modelC45 <- J48(calidad ~ ., data = data_vino) 
+modelC45 
+
+ 
+
+plot(modelC45) 
+```
+
+El árbol resultante cuenta con un overfitting excesivo, dada la incertidumbre que generan las predictoras. Una posible solución es emplear bosques aleatorios, que mejoran la precisión y generalización, no restringiendo tanto el modelo y compensando la voracidad de la que hablamos previamente.
+
+
+```{r,warning=FALSE}
+library(randomForest)
+
+table_vino = read.table("E:\\GDrive1\\Uni\\Master\\tecnologia_conocimiento\\practicas\\arboles_decision\\vino.txt",  
+           header = T,       
+           sep = ",",              
+          ) 
+
+ 
+
+data_vino <- as.data.frame(table_vino) 
+
+data_vino$calidad	<- as.factor(data_vino$calidad)
+
+set.seed(222) 
+ind <- sample(2, nrow(data_vino), replace = TRUE, prob = c(0.7, 0.3)) 
+train <- data_vino[ind==1,] 
+test <- data_vino[ind==2,] 
+
+## Por defecto
+rf <- randomForest(calidad~., data=train, proximity=TRUE)
+print(rf)
+
+
+
+
+
+#se predice de nuevo con la muestra de entrenamiento. 
+p1 <- predict(rf, train) 
+confusionMatrix(p1, train$ calidad) 
+
+ 
+
+#ahora sí se predice con la de prueba. Esta es la importante 
+p1 <- predict(rf, test) 
+confusionMatrix(p1, test$ calidad) 
+
+ 
+
+#gráfico de error por especie y número de árboles 
+plot(rf) 
+
+## Qué variables son más relevantes?
+importance(rf,type=1)
+
+varImpPlot(rf)
+```
+
+
+Como podemos observar, hemos dividido la muestra en conjunto de entrenamiento y test, y posteriormente generamos un bosque tomando los datos de entrenamiento, el cual cuenta con 500 árboles. \
+Finalmente, se prueba el modelo generado anteriormente con el conjunto de tests, el cual da una precisión del 68,12%. \
+Del gráfico de importancia de las variables extraemos que el % de alcohol es la que más contribuye a la predicción de la calidad del vino, disminuyendo el ajuste en la mayor medida si la elimináramos.
